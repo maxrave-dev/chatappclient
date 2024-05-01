@@ -62,7 +62,7 @@ export class APIService {
         if (isNaN(Date.parse(expire))) {
             cookies.remove('token', {path: '/'})
             cookies.remove('expire', {path: '/'})
-            redirect('/login')
+            window.location.href = '/login'
         }
         else if (!isNaN(Date.parse(expire)) && Date.parse(expire) < Date.now()) {
             let userName = cookies.get('user').UserName
@@ -73,13 +73,13 @@ export class APIService {
                     this.setToken(tokenResponse.token)
                     cookies.set('token', tokenResponse.token, {path: '/'})
                     cookies.set('expire', tokenResponse.expiresIn, {path: '/'})
-                    redirect('/chat')
+                    window.location.href = '/chat'
                 } else {
-                    redirect('/login')
+                    window.location.href = '/login'
                 }
             })
         } else {
-            redirect('/login')
+            window.location.href = '/login'
         }
     }
     getUser = async () => {

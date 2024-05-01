@@ -49,12 +49,12 @@ export default function SignIn() {
                     setToken(tokenLoaded)
                     if (tokenLoaded != null) {
                         console.log("token" , tokenLoaded)
-                        APIService.getInstance().setToken = tokenLoaded
+                        APIService.getInstance().setToken(tokenLoaded)
                         setCookie('token', tokenLoaded, { path: '/' });
                         setUserCookie('user', authBody, { path: '/' });
                         setExpire('expire', (data as TokenResponse).expiresIn, { path: '/' });
                     }
-                    redirect('/chat')
+                    window.location.href = '/chat'
                 }
                 else {
                     console.log("error" , error)

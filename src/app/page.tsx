@@ -20,11 +20,11 @@ export default function Page() {
     } = useSWR(shouldRefreshToken ? [user, true] : null, ([authBody, rememberMe]) => APIService.getInstance().authentication(authBody.user, rememberMe))
     useEffect(() => {
         if (user.user == undefined) {
-            redirect('/login')
+            window.location.href = '/login'
         } else if ((token.token === undefined) || expire.expire != undefined && (expire.expire as number) < new Date().getMilliseconds()) {
             setShouldRefreshToken(true)
         } else {
-            redirect('/chat')
+            window.location.href = '/chat'
         }
 
     }, [user, token, expire]);
@@ -36,7 +36,7 @@ export default function Page() {
                 toast("Login Successful")
                 let tokenLoaded = (data as TokenResponse).token
                 if (tokenLoaded != null) {
-                    APIService.getInstance().setToken = tokenLoaded
+                    APIService.getInstance().setToken(tokenLoaded)
                     setToken('token', tokenLoaded, {path: '/'});
                     setExpire('expire', (data as TokenResponse).expiresIn, {path: '/'});
                 }
@@ -45,7 +45,7 @@ export default function Page() {
                 toast("Error", {
                     description: (data as ErrorResponse).message,
                 })
-                redirect('/login')
+                window.location.href = '/login'
             }
         }
     }, [shouldRefreshToken]);
