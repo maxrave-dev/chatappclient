@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import Avatar from 'react-avatar';
 import ChatBottombar from "./chat-bottombar";
 import { AnimatePresence, motion } from "framer-motion";
-import {Text} from "lucide-react";
+import {Locate, Text} from "lucide-react";
 import ShowButtonHover from "@/components/ShowButtonHover";
 
 interface ChatListProps {
@@ -44,14 +44,14 @@ export function ChatList({
             return `${minutesAgo} minute${minutesAgo === 1 ? '' : 's'} ago`;
         } else {
             // If the difference is greater than or equal to 1 hour
-            return date.toLocaleString();
+            return date.toLocaleString('vi-VN', {timeZone: 'Asia/Ho_Chi_Minh'});
         }
     }
     function uploadFile(file: File) {
         console.log("Uploading file " + file.name)
         const newUpload: UploadBody = {
             RoomId: selectedRoom.id,
-            BackendHost: 'http://localhost:5001',
+            BackendHost: 'http://nhom02.api.ec47.net',
             File: file,
         };
         sendUpload(newUpload);

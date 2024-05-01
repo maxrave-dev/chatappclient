@@ -16,7 +16,7 @@ export class APIService {
         return this._instance ?? (this._instance = new APIService());
     }
 
-    baseUrl = "http://localhost:5001/api"
+    baseUrl = "http://nhom02.api.ec47.net/api"
     private bearerToken: string | null = null;
 
     public getToken(): string | null {

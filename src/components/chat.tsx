@@ -43,7 +43,7 @@ export function Chat({ selectedRoom, isMobile }: ChatProps) {
     const {data: removeMessageData, error: removeMessageError} = useSWR(shouldRemoveMessage ? removeMessage : null, APIService.getInstance().removeMessage)
 
     const [connection, setConnection] = useState<HubConnection | null>(null);
-    const {data: user, error: usererror} = useSWR("getUser", APIService.getInstance().getUser)
+    const {data: user, error: usererror} = useSWR("getUser", APIService.getInstance().getUser, {refreshInterval: 1000})
     const [messages, setMessages] = useState<Message[]>([])
 
     useEffect(() => {
@@ -59,10 +59,10 @@ export function Chat({ selectedRoom, isMobile }: ChatProps) {
         }
     }, [data]);
 
-    const joinRoom = async (roomName: string) => {
+    async function joinRoom (roomName: string) {
         try {
             const conn = new HubConnectionBuilder()
-                .withUrl("http://localhost:5001/chatHub", {
+                .withUrl("http://nhom02.api.ec47.net/chatHub", {
                     accessTokenFactory: () => {
                         return APIService.getInstance().getToken() ?? "";
                     },
@@ -75,12 +75,10 @@ export function Chat({ selectedRoom, isMobile }: ChatProps) {
 
             conn.on('newMessage', (payload: Message) => {
                 console.log("tim kiem" + messages.find(message => message.id == payload.id))
-                if (payload.fromUserName != user?.userName) {
-                    if (messages.find(message => message.id == payload.id) === undefined) {
-                        console.log("Message sent", payload)
-                        setMessages(prevState => [...prevState, payload])
-                    }
-                }
+                handleAddMessage(payload)
+            })
+            conn.on('removeChatMessage', (id: number) => {
+                handleRemoveMessage(id)
             })
             conn.on('onRoomDeleted', () => {
                 console.log("Room deleted")
@@ -97,6 +95,48 @@ export function Chat({ selectedRoom, isMobile }: ChatProps) {
         } catch (e) {
             console.log("Error creating connection", e)
         }
+    }
+
+    const [shouldHandleAddMessage, setShouldHandleAddMessage] = useState<boolean>(false)
+    const [addMessageData, setAddMessageData] = useState<Message | null>(null)
+    const [shouldHandleRemoveMessage, setShouldHandleRemoveMessage] = useState<boolean>(false)
+    const [removeMessageDataId, setRemoveMessageDataId] = useState<number | null>(null)
+    useEffect(() => {
+        if (shouldHandleAddMessage && addMessageData != null) {
+            if (addMessageData.fromUserName != user?.userName) {
+                if (messages.find(message => message.id == addMessageData.id) === undefined) {
+                    console.log("Message sent", addMessageData)
+                    setMessages(prevState => [...prevState, addMessageData])
+                }
+            }
+            setShouldHandleAddMessage(false);
+            setAddMessageData(null);
+        }
+    }, [shouldHandleAddMessage, addMessageData, messages]);
+    useEffect(() => {
+        if (shouldHandleRemoveMessage && removeMessageDataId != null) {
+            console.log("Message removed", removeMessageDataId)
+            let messIndex = messages.findIndex(message => message.id == removeMessageDataId)
+            console.log(messIndex)
+            if (messIndex != -1) {
+                setMessages([
+                    ...messages.slice(0, messIndex),
+                    ...messages.slice(messIndex + 1)
+                ]);
+            }
+            setShouldHandleRemoveMessage(false);
+            setRemoveMessageDataId(null);
+        }
+    }, [shouldHandleRemoveMessage, removeMessageDataId, messages]);
+
+    function handleAddMessage(payload: Message) {
+        setAddMessageData(payload)
+        setShouldHandleAddMessage(true)
+    }
+
+    function handleRemoveMessage(id: number) {
+        setRemoveMessageDataId(id)
+        setShouldHandleRemoveMessage(true)
     }
 
     useEffect(() => {
