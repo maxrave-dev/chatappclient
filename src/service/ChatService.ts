@@ -8,7 +8,7 @@ function createConnection(messageType: string) {
     if (!connectionObj) {
         console.log('SOCKET: Registering on server events ', messageType);
         const connection = new HubConnectionBuilder()
-            .withUrl("http://nhom02.api.ec47.net/chatHub", {
+            .withUrl("https://nhom02.api.ec47.net/chatHub", {
                 accessTokenFactory: () => {
                     return APIService.getInstance().getToken() ?? "";
                 },

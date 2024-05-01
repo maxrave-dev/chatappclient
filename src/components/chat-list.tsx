@@ -51,7 +51,7 @@ export function ChatList({
         console.log("Uploading file " + file.name)
         const newUpload: UploadBody = {
             RoomId: selectedRoom.id,
-            BackendHost: 'http://nhom02.api.ec47.net',
+            BackendHost: 'https://nhom02.api.ec47.net',
             File: file,
         };
         sendUpload(newUpload);

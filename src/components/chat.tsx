@@ -62,7 +62,7 @@ export function Chat({ selectedRoom, isMobile }: ChatProps) {
     async function joinRoom (roomName: string) {
         try {
             const conn = new HubConnectionBuilder()
-                .withUrl("http://nhom02.api.ec47.net/chatHub", {
+                .withUrl("https://nhom02.api.ec47.net/chatHub", {
                     accessTokenFactory: () => {
                         return APIService.getInstance().getToken() ?? "";
                     },
